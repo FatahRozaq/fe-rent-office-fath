@@ -14,7 +14,7 @@ export default function BrowseCityWrapper() {
         axios
         .get("http://127.0.0.1:8000/api/cities", {
             headers: {
-                "X-API-KEY": "your-api-key",
+                "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
             },
         })
         .then((response) => {
@@ -26,6 +26,14 @@ export default function BrowseCityWrapper() {
             setLoading(false);
         });
     }, [])
+
+    if (loading) {
+       return <p>Loading...</p>
+    }
+
+    if (error) {
+      return <p>Error loading data: {error}</p>
+    }
 
     return (
         <section id="Cities" className="flex flex-col gap-[30px] mt-[100px]">
@@ -50,9 +58,11 @@ export default function BrowseCityWrapper() {
                 slidesOffsetAfter={30}
                 slidesOffsetBefore={30}
                 >
-                  <SwiperSlide className="!w-fit first-of-type:pl-[calc((100%-1130px-60px)/2)] last-of-type:pr-[calc((100%-1130px-60px)/2)]">
-                    <CityCard></CityCard>
-                  </SwiperSlide>
+                  {cities.map((city) => (
+                      <SwiperSlide key={city.id} className="!w-fit first-of-type:pl-[calc((100%-1130px-60px)/2)] last-of-type:pr-[calc((100%-1130px-60px)/2)]">
+                        <CityCard city={city}></CityCard>
+                      </SwiperSlide>
+                  )) }
               </Swiper>
             </div>
           </div>
