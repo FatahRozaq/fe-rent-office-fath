@@ -47,9 +47,7 @@ export default function BrowseOfficeWrapper() {
           </h2>
           <div className="grid grid-cols-3 gap-[30px]">
               {offices.map((office) => (
-                  <SwiperSlide key={office.id} className="!w-fit first-of-type:pl-[calc((100%-1130px-60px)/2)] last-of-type:pr-[calc((100%-1130px-60px)/2)]">
-                    <OfficeCard office={office}></OfficeCard>
-                  </SwiperSlide>
+                  <OfficeCard key={office.id} office={office}></OfficeCard>
               )) }
           </div>
         </section>

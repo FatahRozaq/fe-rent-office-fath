@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import BrowseCityWrapper from "../wrappers/BrowseCityWrapper"
 import BrowseOfficeWrapper from "../wrappers/BrowseOfficeWrapper"
 
@@ -10,9 +11,9 @@ export default function Browse() {
               <img src="/assets/images/logos/logo.svg" alt="logo" />
             </a>
             <ul className="flex items-center gap-[50px] w-fit">
-              <li>
-                <a href="">Browse</a>
-              </li>
+              <Link to="/browse">
+                <a href="#">Browse</a>
+              </Link>
               <li>
                 <a href="">Popular</a>
               </li>
