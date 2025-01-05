@@ -53,15 +53,15 @@ export default function CityDetails() {
               <Link to="/browse">
                 <a href="#">Browse</a>
               </Link>
-              <li>
-                <a href="">Popular</a>
-              </li>
-              <li>
-                <a href="">Categories</a>
-              </li>
-              <li>
-                <a href="">Events</a>
-              </li>
+              <Link to="/browse">
+                <a href="#">Popular</a>
+              </Link>
+              <Link to="/browse">
+                <a href="#">Categories</a>
+              </Link>
+              <Link to="/browse">
+                <a href="#">Events</a>
+              </Link>
               <li>
                 <a href="view-booking-details.html">My Booking</a>
               </li>
