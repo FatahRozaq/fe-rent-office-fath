@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import Navbar from "../components/Navbar";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Office } from "../types/type";
@@ -56,13 +56,13 @@ export default function Details() {
               slidesOffsetBefore={10}
             >
               <SwiperSlide className="!w-fit">
-                  <div className="w-[700px] h-[550px] overflow-hidden">
-                    <img
-                      src={`${baseUrl}/${office.thumbnail}`}
-                      className="w-full h-full object-cover"
-                      alt="thumbnail"
-                    />
-                  </div>
+                <div className="w-[700px] h-[550px] overflow-hidden">
+                  <img
+                    src={`${baseUrl}/${office.thumbnail}`}
+                    className="w-full h-full object-cover"
+                    alt="thumbnail"
+                  />
+                </div>
               </SwiperSlide>
 
               {office.photos.map((photo) => (
@@ -133,9 +133,7 @@ export default function Details() {
               <p className="font-semibold text-right">4.5/5 (19,384)</p>
             </div>
           </div>
-          <p className="leading-[30px]">
-            {office.about}
-          </p>
+          <p className="leading-[30px]">{office.about}</p>
           <hr className="border-[#F6F5FD]" />
           <h2 className="font-bold">You Get What You Need Most</h2>
           <div className="grid grid-cols-3 gap-x-5 gap-y-[30px]">
@@ -240,42 +238,37 @@ export default function Details() {
           <div className="flex flex-col rounded-[20px] border border-[#E0DEF7] p-[30px] gap-[30px] bg-white">
             <div>
               <p className="font-extrabold text-[32px] leading-[48px] text-[#0D903A]">
-                Rp {office.price.toLocaleString('id')}
+                Rp {office.price.toLocaleString("id")}
               </p>
-              <p className="font-semibold mt-1">For {office.duration} days working</p>
+              <p className="font-semibold mt-1">
+                For {office.duration} days working
+              </p>
             </div>
             <hr className="border-[#F6F5FD]" />
             <div className="flex flex-col gap-5">
-              
-              
-
               {office.benefits.map((benefit) => (
                 <div key={benefit.id} className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/verify.svg"
-                  className="w-[30px] h-[30px]"
-                  alt="icon"
-                />
-                <p className="font-semibold leading-[28px]">
-                  {benefit.name}
-                </p>
-              </div>
+                  <img
+                    src="/assets/images/icons/verify.svg"
+                    className="w-[30px] h-[30px]"
+                    alt="icon"
+                  />
+                  <p className="font-semibold leading-[28px]">{benefit.name}</p>
+                </div>
               ))}
-              
             </div>
             <hr className="border-[#F6F5FD]" />
             <div className="flex flex-col gap-[14px]">
-              <a
-                href="booking.html"
-                className="flex items-center justify-center w-full rounded-full p-[16px_26px] gap-3 bg-[#0D903A] font-bold text-[#F7F7FD]"
-              >
-                <img
-                  src="/assets/images/icons/slider-horizontal-white.svg"
-                  className="w-6 h-6"
-                  alt="icon"
-                />
-                <span>Book This Office</span>
-              </a>
+              <Link to={`/office/${office.slug}/book`}>
+                <div className="flex items-center justify-center w-full rounded-full p-[16px_26px] gap-3 bg-[#0D903A] font-bold text-[#F7F7FD]">
+                  <img
+                    src="/assets/images/icons/slider-horizontal-white.svg"
+                    className="w-6 h-6"
+                    alt="icon"
+                  />
+                  <span>Book This Office</span>
+                </div>
+              </Link>
               <button className="flex items-center justify-center w-full rounded-full border border-[#000929] p-[16px_26px] gap-3 bg-white font-semibold">
                 <img
                   src="/assets/images/icons/save-add.svg"
