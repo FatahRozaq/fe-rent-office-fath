@@ -4,21 +4,21 @@ import { useEffect, useState } from "react";
 import { Office } from "../types/type";
 import { z } from "zod";
 import axios from "axios";
+import { bookingSchema } from "../types/validationBooking";
 
 export default function BookOffice() {
-
-  const { slug } = useParams<{ slug: string}>();  
+  const { slug } = useParams<{ slug: string }>();
   const [office, setOffice] = useState<Office | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name : "",
-    phone_number : "",
-    started_at : "",
-    office_space_id : "",
-    totalAmountWithUniqueCode : 0
+    name: "",
+    phone_number: "",
+    started_at: "",
+    office_space_id: "",
+    totalAmountWithUniqueCode: 0,
   });
 
   const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
@@ -26,7 +26,8 @@ export default function BookOffice() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [uniqueCode, setUniqueCode] = useState<number>(0);
-  const [totalAmountWithUniqueCode, setTotalAmountWithUniqueCode] = useState<number>(0);
+  const [totalAmountWithUniqueCode, setTotalAmountWithUniqueCode] =
+    useState<number>(0);
 
   useEffect(() => {
     axios
@@ -42,26 +43,26 @@ export default function BookOffice() {
 
         const officeSpaceId = response.data.data.id;
         const generatedUniqueCode = Math.floor(100 + Math.random() * 900);
-        const grandTotal = response.data.data.price + generatedUniqueCode;
+        const grandTotal = response.data.data.price - generatedUniqueCode;
 
         setUniqueCode(generatedUniqueCode);
         setTotalAmountWithUniqueCode(grandTotal);
 
         setFormData((prevData) => ({
-            ...prevData,
-            office_space_id: officeSpaceId,
-            total_amount: grandTotal
-        }))
-        
+          ...prevData,
+          office_space_id: officeSpaceId,
+          total_amount: grandTotal,
+        }));
+
         setLoading(false);
       })
-      .catch((error : unknown) => {
-        if(axios.isAxiosError(error)) {
-            console.log("Error fetching data:", error.message);
-            setError(error.message);
+      .catch((error: unknown) => {
+        if (axios.isAxiosError(error)) {
+          console.log("Error fetching data:", error.message);
+          setError(error.message);
         } else {
-            console.error("Unexpected error:", error);
-            setError("An unexpected error occurred");
+          console.error("Unexpected error:", error);
+          setError("An unexpected error occurred");
         }
         setLoading(false);
       });
@@ -80,6 +81,63 @@ export default function BookOffice() {
   }
 
   const baseUrl = "http://127.0.0.1:8000/storage";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log("Validating form data...");
+    const validation = bookingSchema.safeParse(formData);
+
+    if (!validation.success) {
+      console.error("Validation errors:", validation.error.issues);
+      setFormErrors(validation.error.issues);
+      return;
+    }
+
+    console.log("Form data is valid. Submitting...", formData);
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/booking-transaction",
+        {
+          ...formData,
+        },
+        {
+          headers: {
+            "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
+          },
+        }
+      );
+
+      console.log("Form submitted successfully:", response.data);
+
+      navigate("/success-booking", {
+        state: {
+          office,
+          booking: response.data,
+        },
+      });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.log("Error submitting form:", error.message);
+        setError(error.message);
+      } else {
+        console.error("Unexpected error:", error);
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -112,9 +170,7 @@ export default function BookOffice() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <p className="font-bold text-xl leading-[30px]">
-                {office.name}
-              </p>
+              <p className="font-bold text-xl leading-[30px]">{office.name}</p>
               <div className="flex items-center gap-[6px]">
                 <img
                   src="/assets/images/icons/location.svg"
@@ -141,10 +197,15 @@ export default function BookOffice() {
                 <input
                   type="text"
                   name="name"
+                  onChange={handleChange}
+                  value={formData.name}
                   id="name"
                   className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#000929]"
                   placeholder="Write your complete name"
                 />
+                {formErrors.find((error) => error.path.includes("name")) && (
+                  <p className="text-red-500">Name is required</p>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -159,11 +220,16 @@ export default function BookOffice() {
                 />
                 <input
                   type="tel"
-                  name="phone"
-                  id="phone"
+                  name="phone_number"
+                  onChange={handleChange}
+                  value={formData.phone_number}
+                  id="phone_number"
                   className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#000929]"
                   placeholder="Write your valid number"
                 />
+                {formErrors.find((error) =>
+                  error.path.includes("phone_Number")
+                ) && <p className="text-red-500">Phone number is required</p>}
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -178,10 +244,15 @@ export default function BookOffice() {
                 />
                 <input
                   type="date"
-                  name="date"
-                  id="date"
+                  name="started_at"
+                  onChange={handleChange}
+                  value={formData.started_at}
+                  id="started_at"
                   className="relative appearance-none outline-none w-full py-3 font-semibold [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0"
                 />
+                {formErrors.find((error) =>
+                  error.path.includes("started_at")
+                ) && <p className="text-red-500">Started at is required</p>}
               </div>
             </div>
           </div>
@@ -233,20 +304,26 @@ export default function BookOffice() {
           <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <p className="font-semibold">Duration</p>
-              <p className="font-bold">20 Days Working</p>
+              <p className="font-bold">{office.duration} Days Working</p>
             </div>
             <div className="flex items-center justify-between">
               <p className="font-semibold">Sub Total</p>
-              <p className="font-bold">Rp 250.000</p>
+              <p className="font-bold">
+                Rp {office.price.toLocaleString("id")}
+              </p>
             </div>
             <div className="flex items-center justify-between">
               <p className="font-semibold">Unique Code</p>
-              <p className="font-bold text-[#FF2D2D]">-Rp 340</p>
+              <p className="font-bold text-[#FF2D2D]">-Rp {uniqueCode}</p>
             </div>
             <div className="flex items-center justify-between">
               <p className="font-semibold">Grand Total</p>
               <p className="font-bold text-[22px] leading-[33px] text-[#0D903A]">
-                Rp 249.660
+                Rp{" "}
+                {totalAmountWithUniqueCode.toLocaleString("id", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
               </p>
             </div>
             <div className="relative rounded-xl p-[10px_20px] gap-[10px] bg-[#000929] text-white">
@@ -308,9 +385,10 @@ export default function BookOffice() {
           <hr className="border-[#F6F5FD]" />
           <button
             type="submit"
+            disabled={isLoading}
             className="flex items-center justify-center w-full rounded-full p-[16px_26px] gap-3 bg-[#0D903A] font-bold text-[#F7F7FD]"
           >
-            <span>I’ve Made The Payment</span>
+            <span>{isLoading ? "Loading..." : "I've Already Paid"}</span>
           </button>
         </div>
       </form>
