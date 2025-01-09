@@ -123,7 +123,7 @@ export default function BookOffice() {
       navigate("/success-booking", {
         state: {
           office,
-          booking: response.data,
+          booking: response.data.data,
         },
       });
     } catch (error: unknown) {
@@ -157,7 +157,7 @@ export default function BookOffice() {
         />
       </div>
       <form
-        action="booking-finished.html"
+        onSubmit={handleSubmit}
         className="relative flex justify-center max-w-[1130px] mx-auto gap-[30px] mb-20 z-20"
       >
         <div className="flex flex-col shrink-0 w-[500px] h-fit rounded-[20px] border border-[#E0DEF7] p-[30px] gap-[30px] bg-white">
@@ -228,7 +228,7 @@ export default function BookOffice() {
                   placeholder="Write your valid number"
                 />
                 {formErrors.find((error) =>
-                  error.path.includes("phone_Number")
+                  error.path.includes("phone_number")
                 ) && <p className="text-red-500">Phone number is required</p>}
               </div>
             </div>
