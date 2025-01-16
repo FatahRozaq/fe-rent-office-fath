@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import OfficeCard from "../components/OfficeCard";
 import Navbar from "../components/Navbar";
+import apiClient, {FILE_URL} from "../services/apiService";
 
 export default function CityDetails() {
   const { slug } = useParams<{ slug: string }>();
@@ -12,12 +13,8 @@ export default function CityDetails() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8000/api/city/${slug}`, {
-        headers: {
-          "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
-        },
-      })
+    apiClient
+      .get(`/city/${slug}`)
       .then((response) => {
         setCity(response.data.data);
         setLoading(false);
@@ -40,7 +37,7 @@ export default function CityDetails() {
     return <p>Category not found</p>;
   }
 
-  const baseUrl = "http://127.0.0.1:8000/storage";
+  const baseUrl = FILE_URL;
 
   return (
     <>

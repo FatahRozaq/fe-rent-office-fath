@@ -5,6 +5,7 @@ import { Office } from "../types/type";
 import { z } from "zod";
 import axios from "axios";
 import { bookingSchema } from "../types/validationBooking";
+import apiClient, { isAxiosError, FILE_URL } from "../services/apiService";
 
 export default function BookOffice() {
   const { slug } = useParams<{ slug: string }>();
@@ -31,11 +32,7 @@ export default function BookOffice() {
 
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8000/api/office/${slug}`, {
-        headers: {
-          "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
-        },
-      })
+      .get(`/office/${slug}`)
       .then((response) => {
         console.log("Office data fetched succesfully", response.data.data);
 
@@ -80,7 +77,7 @@ export default function BookOffice() {
     return <p>No office data available</p>;
   }
 
-  const baseUrl = "http://127.0.0.1:8000/storage";
+  const baseUrl = FILE_URL;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -106,19 +103,12 @@ export default function BookOffice() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/booking-transaction",
+      const response = await apiClient.post(
+        "/booking-transaction",
         {
           ...formData,
         },
-        {
-          headers: {
-            "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
-          },
-        }
       );
-
-      console.log("Form submitted successfully:", response.data);
 
       navigate("/success-booking", {
         state: {
@@ -127,7 +117,7 @@ export default function BookOffice() {
         },
       });
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log("Error submitting form:", error.message);
         setError(error.message);
       } else {

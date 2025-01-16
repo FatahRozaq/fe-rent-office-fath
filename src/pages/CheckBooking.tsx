@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { z } from "zod";
 import { BookingDetails } from "../types/type";
 import { viewBookingSchema } from "../types/validationBooking";
-import axios from "axios";
+import apiClient, { isAxiosError, FILE_URL } from "../services/apiService";
 
 export default function CheckBooking() {
   const [formData, setFormdata] = useState({
@@ -17,7 +17,7 @@ export default function CheckBooking() {
     null
   );
   const [error, setError] = useState<string | null>(null);
-  const baseUrl = "http://127.0.0.1:8000/storage/";
+  const baseUrl = FILE_URL;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormdata({
@@ -43,23 +43,18 @@ export default function CheckBooking() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/check-booking",
+      const response = await apiClient.post(
+        "/check-booking",
         {
           ...formData,
         },
-        {
-          headers: {
-            "X-API-KEY": "erfajkhjk13jkhjkiu12kljlkas",
-          },
-        }
       );
 
       console.log("We are checking your booking details:", response.data.data);
 
       setBookingDetails(response.data.data);
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log("Error submitting form:", error.message);
         setError(error.message);
       } else {

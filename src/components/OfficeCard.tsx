@@ -1,7 +1,8 @@
 import { Office } from "../types/type";
+import {FILE_URL} from "../services/apiService";
 
 export default function OfficeCard({office}: OfficeCardProps) {
-    const baseUrl = "http://127.0.0.1:8000/storage";
+    const baseUrl = FILE_URL;
     return (
         <div className="card">
             <div className="flex flex-col rounded-[20px] border border-[#E0DEF7] bg-white overflow-hidden">
